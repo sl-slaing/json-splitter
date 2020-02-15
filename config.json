@@ -1,0 +1,21 @@
+﻿{
+  "tableName": "customer",
+  "sql": {
+    "connectionString": "server=localhost,database=customers"
+  },
+  "process": {
+    "fileName": "",
+    "arguments": "",
+    "workingDirectory": "",
+    "csvHeader": true,
+    "format": "csv"
+  },
+  "relationships": {
+    "orders": {
+      "tableName": "order",
+      "foreignKeyColumnName": "customer_id",
+      "foreignKeyPropertyName": "id",
+      "connectionString": "server=local,database=orders"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "json-splitter": {
+      "commandName": "Project",
+      "commandLineArgs": "--config ..\\..\\..\\config.json --out-to-files --input ..\\..\\..\\input.ndjson"
+    }
+  }
+}
