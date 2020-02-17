@@ -1,34 +1,35 @@
 ﻿using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 
 namespace json_splitter
 {
     public class DataProcessor : IDataProcessor
     {
-        private readonly IDataSender sender;
+        private readonly IDataSenderFactory senderFactory;
         private readonly IRelationalObjectReader objectReader;
 
-        public DataProcessor(IDataSender sender, IRelationalObjectReader objectReader)
+        public DataProcessor(IDataSenderFactory senderFactory, IRelationalObjectReader objectReader)
         {
-            this.sender = sender;
+            this.senderFactory = senderFactory;
             this.objectReader = objectReader;
         }
 
-        public void ProcessData(IRelatedDataConfiguration config, JObject jsonData)
+        public void ProcessData(IDataConfiguration config, JObject jsonData)
         {
             var data = objectReader.ReadJson(jsonData);
 
-            ProcessData(config, data, null);
+            ProcessData(config, data);
         }
 
-        private void ProcessData(IRelatedDataConfiguration config, RelationalObject data, IReadOnlyDictionary<string, object> parentData)
+        private void ProcessData(IDataConfiguration config, IRelationalObject data)
         {
-            sender.SendData(config, data.WithForeignKey(config, parentData));
+            var sender = senderFactory.GetDataSender(config);
 
-            foreach (var relationship in data.RelatedData)
+            sender.SendData(data);
+    
+            foreach (var relationship in data.Children)
             {
                 var relationshipConfig = config.Relationships[relationship.RelationshipName];
-                ProcessData(relationshipConfig, relationship, data.Data);
+                ProcessData(relationshipConfig, relationship);
             }
         }
     }

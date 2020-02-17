@@ -1,12 +1,14 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace json_splitter
 {
-    public class DataSenderFactory
+    public class DataSenderFactory : IDataSenderFactory
     {
         private readonly Arguments args;
         private readonly JsonSerializer serialiser;
+        private readonly Dictionary<IDataConfiguration, IDataSender> senders = new Dictionary<IDataConfiguration, IDataSender>();
 
         public DataSenderFactory(Arguments args, JsonSerializer serialiser)
         {
@@ -16,19 +18,37 @@ namespace json_splitter
 
         public IDataSender GetDataSender(IDataConfiguration configuration)
         {
-            if (args.FileOutput)
+            if (!senders.ContainsKey(configuration))
             {
-                return new FileDataSender(serialiser);
+                senders.Add(configuration, CreateDataSender(configuration));
+            }
+
+            return senders[configuration];
+        }
+
+        public void Dispose()
+        {
+            foreach (var sender in senders.Values)
+            {
+                sender.Dispose();
+            }
+        }
+
+        private IDataSender CreateDataSender(IDataConfiguration configuration)
+        {
+            if (configuration.File != null)
+            {
+                return new FileDataSender(serialiser, configuration.File);
             }
 
             if (configuration.Process != null)
             {
-                return new ProcessDataSender(serialiser);
+                return new ProcessDataSender(serialiser, configuration.Process);
             }
 
             if (configuration.Sql != null)
             {
-                return new SqlDataSender();
+                return new SqlDataSender(configuration.Sql, configuration);
             }
 
             throw new InvalidOperationException("No output configured, provide either 'process' or 'sql' in the config file or use the `--out-to-files` switch to output data to individual files");

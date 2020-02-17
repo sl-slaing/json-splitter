@@ -4,6 +4,6 @@ namespace json_splitter
 {
     public interface IDataProcessor
     {
-        void ProcessData(IRelatedDataConfiguration config, JObject jsonData);
+        void ProcessData(IDataConfiguration config, JObject jsonData);
     }
 }

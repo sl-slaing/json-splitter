@@ -9,10 +9,10 @@ namespace json_splitter
     {
         public RelationalObject ReadJson(JObject jsonData)
         {
-            return ReadJson(jsonData, null);
+            return ReadJson(jsonData, null, null);
         }
 
-        private RelationalObject ReadJson(JObject jsonData, string name)
+        private RelationalObject ReadJson(JObject jsonData, string name, IRelationalObject parent)
         {
             var data = new Dictionary<string, object>();
             var relationships = new List<JProperty>();
@@ -28,15 +28,19 @@ namespace json_splitter
                 data.Add(property.Name, property.Value.ToObject<object>());
             }
 
-            return new RelationalObject
+            var obj = new RelationalObject
             {
                 RelationshipName = name,
                 Data = data,
-                RelatedData = ReadRelationships(relationships).ToList()
+                Parent = parent
             };
+
+            obj.Children = ReadRelationships(relationships, obj).ToList();
+
+            return obj;
         }
 
-        private IEnumerable<RelationalObject> ReadRelationships(List<JProperty> relationships)
+        private IEnumerable<RelationalObject> ReadRelationships(List<JProperty> relationships, IRelationalObject parent)
         {
             foreach (var relationship in relationships)
             {
@@ -57,7 +61,7 @@ namespace json_splitter
 
                 foreach (var dataItem in dataItems)
                 {
-                    yield return ReadJson(dataItem, relationship.Name);
+                    yield return ReadJson(dataItem, relationship.Name, parent);
                 }
             }
         }

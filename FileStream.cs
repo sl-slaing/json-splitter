@@ -6,26 +6,21 @@ namespace json_splitter
 {
     public class FileStream : IDisposable
     {
-        private readonly TextWriter writer;
-        private readonly JsonSerializer serialiser;
+        private readonly IOutputStream output;
 
-        public FileStream(string fileName, JsonSerializer serialiser)
+        public FileStream(IOutputStream output)
         {
-            this.writer = new StreamWriter(fileName, false);
-            this.serialiser = serialiser;
+            this.output = output;
         }
 
         public void Dispose()
         {
-            writer.Flush();
-            writer.Close();
+            output.Dispose();
         }
 
         public void SendData(IRelationalObject relationalObject)
         {
-            var jsonWriter = new JsonTextWriter(writer);
-            serialiser.Serialize(jsonWriter, relationalObject.Data);
-            writer.WriteLine();
+            output.Write(relationalObject);
         }
     }
 }

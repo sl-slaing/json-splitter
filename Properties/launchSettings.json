@@ -2,7 +2,8 @@
   "profiles": {
     "json-splitter": {
       "commandName": "Project",
-      "commandLineArgs": "--config ..\\..\\..\\config.json --out-to-files --input ..\\..\\..\\input.ndjson"
+      "commandLineArgs": "--config \"C:\\source\\datahelix\\examples\\relational\\relay-config.json\" --input \"C:\\source\\datahelix\\examples\\relational\\output.json\"",
+      "workingDirectory": "C:\\source\\datahelix\\examples\\relational\\relay-output"
     }
   }
 }

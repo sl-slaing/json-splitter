@@ -6,14 +6,28 @@ namespace json_splitter
 {
     public class SqlDataSender : IDataSender
     {
-        private readonly Dictionary<StreamKey, IDataStream> dataStreams = new Dictionary<StreamKey, IDataStream>();
-        
-        public void SendData(IRelatedDataConfiguration config, IRelationalObject relationalObject)
+        private readonly Dictionary<StreamKey, ISqlDataStream> dataStreams = new Dictionary<StreamKey, ISqlDataStream>();
+        private readonly SqlConfiguration configuration;
+        private readonly IDataConfiguration dataConfig;
+
+        public SqlDataSender(SqlConfiguration configuration, IDataConfiguration dataConfig)
         {
-            var key = new StreamKey(config.Sql.ConnectionString, config.TableName);
+            this.configuration = configuration;
+            this.dataConfig = dataConfig;
+        }
+        
+        public void SendData(IRelationalObject relationalObject)
+        {
+            var key = new StreamKey(configuration.ConnectionString, configuration.TableName);
             if (!dataStreams.ContainsKey(key))
             {
-                dataStreams.Add(key, CreateStream(config, relationalObject));
+                dataStreams.Add(key, CreateStream(relationalObject, key));
+            }
+
+            var bindingConfig = configuration as IBindingConfiguration;
+            if (bindingConfig != null)
+            {
+                relationalObject = relationalObject.WithForeignKey(bindingConfig);
             }
 
             var stream = dataStreams[key];
@@ -28,17 +42,17 @@ namespace json_splitter
             }
         }
 
-        private IDataStream CreateStream(IRelatedDataConfiguration config, IRelationalObject relationalObject)
+        private ISqlDataStream CreateStream(IRelationalObject relationalObject, StreamKey key)
         {
             //setup SqlBulkCopy for the given table
             //create and return an empty datareader
-            var bulkCopy = new SqlBulkCopy(config.Sql.ConnectionString);
-            bulkCopy.DestinationTableName = config.TableName;
+            var bulkCopy = new SqlBulkCopy(key.ConnectionString);
+            bulkCopy.DestinationTableName = key.TableName;
             bulkCopy.EnableStreaming = true;
             AddColumnMappings(bulkCopy, relationalObject);
-            bulkCopy.BatchSize = config.Sql.BatchSize;
+            bulkCopy.BatchSize = configuration.BatchSize;
 
-            var stream = new DataStream(config, bulkCopy);
+            var stream = new SqlDataStream(dataConfig, bulkCopy);
             bulkCopy.WriteToServer(stream);
 
             return stream;

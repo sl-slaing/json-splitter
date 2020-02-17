@@ -5,15 +5,15 @@ using System.Data.SqlClient;
 
 namespace json_splitter
 {
-    public class DataStream : IDataReader, IDataStream
+    public class SqlDataStream : IDataReader, ISqlDataStream
     {
-        private readonly IRelatedDataConfiguration config;
+        private readonly IDataConfiguration config;
         private readonly SqlBulkCopy bulkCopy;
         private readonly Queue<IRelationalObject> unreadData = new Queue<IRelationalObject>();
         private bool disposed;
         private IRelationalObject current;
 
-        public DataStream(IRelatedDataConfiguration config, SqlBulkCopy bulkCopy)
+        public SqlDataStream(IDataConfiguration config, SqlBulkCopy bulkCopy)
         {
             this.config = config;
             this.bulkCopy = bulkCopy;

@@ -7,10 +7,12 @@ namespace json_splitter
     {
         private readonly Dictionary<ProcessConfiguration, ProcessStream> streams = new Dictionary<ProcessConfiguration, ProcessStream>();
         private readonly JsonSerializer serialiser;
+        private readonly ProcessConfiguration configuration;
 
-        public ProcessDataSender(JsonSerializer serialiser)
+        public ProcessDataSender(JsonSerializer serialiser, ProcessConfiguration configuration)
         {
             this.serialiser = serialiser;
+            this.configuration = configuration;
         }
 
         public void Dispose()
@@ -21,14 +23,21 @@ namespace json_splitter
             }
         }
 
-        public void SendData(IRelatedDataConfiguration config, IRelationalObject relationalObject)
+        public void SendData(IRelationalObject relationalObject)
         {
-            if (!streams.ContainsKey(config.Process))
+            if (!streams.ContainsKey(configuration))
             {
-                streams.Add(config.Process, new ProcessStream(config.Process, serialiser));
+                var outputStreamFactory = new OutputStreamFactory(configuration.Format, configuration.ColumnHeaders, serialiser);
+                streams.Add(configuration, new ProcessStream(configuration, outputStreamFactory));
             }
 
-            var stream = streams[config.Process];
+            var stream = streams[configuration];
+
+            var bindingConfig = configuration as IBindingConfiguration;
+            if (bindingConfig != null)
+            {
+                relationalObject = relationalObject.WithForeignKey(bindingConfig);
+            }
 
             stream.SendData(relationalObject);
         }

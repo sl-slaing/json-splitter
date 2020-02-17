@@ -2,7 +2,7 @@
 
 namespace json_splitter
 {
-    internal interface IDataStream : IDisposable
+    internal interface ISqlDataStream : IDisposable
     {
         void PushData(IRelationalObject relationalObject);
     }

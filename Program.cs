@@ -13,21 +13,23 @@ namespace json_splitter
                    {
                        var serialiser = new JsonSerializer();
 
-                       var processor = new Processor(
-                           args.Quiet
-                                ? (IProgressReporter)new NoOpProgressReporter()
-                                : new ProgressReporter(Console.Out),
-                           serialiser,
-                           new ConfigurationRepository(serialiser),
-                           new DataProcessorFactory(new RelationalObjectReader()),
-                           new DataSenderFactory(args, serialiser));
-                       try
+                       using (var senderFactory = new DataSenderFactory(args, serialiser))
                        {
-                           processor.Execute(args);
-                       }
-                       catch (Exception exc)
-                       {
-                           Console.Error.WriteLine(exc.ToString());
+                           var processor = new Processor(
+                               args.Quiet
+                                    ? (IProgressReporter)new NoOpProgressReporter()
+                                    : new ProgressReporter(Console.Out),
+                               serialiser,
+                               new ConfigurationRepository(serialiser),
+                               new DataProcessor(senderFactory, new RelationalObjectReader()));
+                           try
+                           {
+                               processor.Execute(args);
+                           }
+                           catch (Exception exc)
+                           {
+                               Console.Error.WriteLine(exc.ToString());
+                           }
                        }
                    });
         }

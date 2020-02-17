@@ -5,9 +5,10 @@ namespace json_splitter
     public interface IRelationalObject
     {
         IReadOnlyDictionary<string, object> Data { get; }
-        IReadOnlyCollection<RelationalObject> RelatedData { get; }
+        IReadOnlyCollection<RelationalObject> Children { get; }
+        IRelationalObject Parent { get; }
         string RelationshipName { get; }
 
-        IRelationalObject WithForeignKey(IRelatedDataConfiguration config, IReadOnlyDictionary<string, object> parentData);
+        IRelationalObject WithForeignKey(IBindingConfiguration binding);
     }
 }

@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace json_splitter
@@ -10,34 +7,36 @@ namespace json_splitter
     public class ProcessStream : IDisposable
     {
         private readonly ProcessConfiguration config;
-        private readonly JsonSerializer serialiser;
+        private readonly IOutputStreamFactory outputFactory;
+        private IOutputStream output;
         private Process process;
-        private StreamWriter writer;
-        private string[] csvColumnOrder;
 
-        public ProcessStream(ProcessConfiguration config, JsonSerializer serialiser)
+        public ProcessStream(ProcessConfiguration config, IOutputStreamFactory outputFactory)
         {
+            if (string.IsNullOrEmpty(config.FileName))
+            {
+                throw new ArgumentNullException("fileName", "Process filename must be supplied");
+            }
+
             this.config = config;
-            this.serialiser = serialiser;
+            this.outputFactory = outputFactory;
         }
 
         public void Dispose()
         {
-            if (process == null || process.HasExited || writer == null)
+            output?.Dispose();
+
+            if (process?.HasExited == false)
             {
-                return;
+                process?.WaitForExit();
             }
 
-            writer.Flush();
-            writer.Close();
-            writer = null;
-            process.WaitForExit();
             process = null;
         }
 
         internal void SendData(IRelationalObject relationalObject)
         {
-            if (process == null || writer == null)
+            if (process == null)
             {
                 StartProcess();
             }
@@ -47,53 +46,12 @@ namespace json_splitter
                 throw new InvalidOperationException($"Target process has exited: {process.Id} ({config.FileName} {config.Arguments})");
             }
 
-            if (csvColumnOrder == null)
-            {
-                csvColumnOrder = CreateCsvColumnOrder(relationalObject);
-                if (config.CsvHeader)
-                {
-                    writer.WriteLine(FormatAsCsv(csvColumnOrder));
-                }
-            }
-
-            switch (config.Format)
-            {
-                case RowFormat.Csv:
-                    writer.WriteLine(FormatDataAsCsv(relationalObject, csvColumnOrder));
-                    break;
-                case RowFormat.Json:
-                    WriteJson(relationalObject);
-                    break;
-                default:
-                    throw new InvalidOperationException("Unsupported row format: " + config.Format);
-            }
-        }
-
-        private string FormatAsCsv<T>(T[] csvColumnOrder)
-        {
-            return string.Join(",", csvColumnOrder.ToArray());
-        }
-
-        private string[] CreateCsvColumnOrder(IRelationalObject relationalObject)
-        {
-            return relationalObject.Data.Keys.ToArray();
-        }
-
-        private void WriteJson(IRelationalObject relationalObject)
-        {
-            var jsonWriter = new JsonTextWriter(writer);
-            serialiser.Serialize(jsonWriter, relationalObject.Data);
-            writer.WriteLine();
-        }
-
-        private string FormatDataAsCsv(IRelationalObject relationalObject, string[] columnOrder)
-        {
-            return FormatAsCsv(columnOrder.Select(column => relationalObject.Data[column]).ToArray());
+            output.Write(relationalObject);
         }
 
         private void StartProcess()
         {
-            process = new Process
+            var process = new Process
             {
                 StartInfo =
                 {
@@ -112,7 +70,8 @@ namespace json_splitter
                 throw new InvalidOperationException($"Could not start process: {config.FileName} {config.Arguments}");
             }
 
-            writer = process.StandardInput;
+            output = outputFactory.Create(process.StandardInput);
+            this.process = process;
         }
     }
 }

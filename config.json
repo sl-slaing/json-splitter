@@ -3,19 +3,33 @@
   "sql": {
     "connectionString": "server=localhost,database=customers"
   },
+  "file": {
+    "filename": "customer.json",
+    "format": "json",
+    "columnHeaders":  false
+  },
   "process": {
     "fileName": "",
     "arguments": "",
     "workingDirectory": "",
-    "csvHeader": true,
+    "columnHeaders": true,
     "format": "csv"
   },
   "relationships": {
     "orders": {
       "tableName": "order",
-      "foreignKeyColumnName": "customer_id",
-      "foreignKeyPropertyName": "id",
-      "connectionString": "server=local,database=orders"
+      "file": {
+        "filename": "order.csv",
+        "format": "csv",
+        "columnHeaders": true,
+        "foreignKeyPropertyName": "id",
+        "foreignKeyColumnName": "customer_id"
+      },
+      "sql": {
+        "connectionString": "some string",
+        "foreignKeyPropertyName": "id",
+        "foreignKeyColumnName": "customer_id"
+      }
     }
   }
 }
