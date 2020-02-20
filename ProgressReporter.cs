@@ -13,7 +13,10 @@ namespace json_splitter
 
         public void ReportProgress(int lineNumber)
         {
-            writer.WriteLine($"Reading line {lineNumber}...");
+            if (lineNumber % 10 == 0)
+            {
+                writer.WriteLine($"Reading line {lineNumber}...");
+            }
         }
 
         public void ReportEnd(int totalLines)
