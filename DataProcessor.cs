@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace json_splitter
 {
@@ -9,12 +10,32 @@ namespace json_splitter
 
         public DataProcessor(IDataSenderFactory senderFactory, IRelationalObjectReader objectReader)
         {
+            if (senderFactory == null)
+            {
+                throw new ArgumentNullException(nameof(senderFactory));
+            }
+
+            if (objectReader == null)
+            {
+                throw new ArgumentNullException(nameof(objectReader));
+            }
+
             this.senderFactory = senderFactory;
             this.objectReader = objectReader;
         }
 
         public void ProcessData(IDataConfiguration config, JObject jsonData)
         {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            if (jsonData == null)
+            {
+                throw new ArgumentNullException(nameof(jsonData));
+            }
+
             var data = objectReader.ReadJson(jsonData);
 
             ProcessData(config, data);

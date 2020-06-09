@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 
 namespace json_splitter
@@ -11,12 +12,22 @@ namespace json_splitter
 
         public CsvStream(TextWriter writer, bool includeHeaders)
         {
+            if (writer == null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             this.writer = writer;
             this.includeHeaders = includeHeaders;
         }
 
         public void Write(IRelationalObject data)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             if (csvColumnOrder == null)
             {
                 csvColumnOrder = CreateCsvColumnOrder(data);
