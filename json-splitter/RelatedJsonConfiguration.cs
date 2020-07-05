@@ -15,6 +15,6 @@ namespace json_splitter
         public FileConfiguration File { get; set; }
 
         IReadOnlyDictionary<string, IDataConfiguration> IDataConfiguration.Relationships 
-            => Relationships.ToDictionary(pair => pair.Key, pair => (IDataConfiguration)pair.Value);
+            => Relationships?.ToDictionary(pair => pair.Key, pair => (IDataConfiguration)pair.Value);
     }
 }

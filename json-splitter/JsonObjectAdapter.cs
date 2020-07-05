@@ -9,11 +9,21 @@ namespace json_splitter
     {
         public RelationalObject ReadJson(JObject jsonData)
         {
+            if (jsonData == null)
+            {
+                throw new ArgumentNullException(nameof(jsonData));
+            }
+
             return ReadJson(jsonData, null, null);
         }
 
         private RelationalObject ReadJson(JObject jsonData, string name, IRelationalObject parent)
         {
+            if (jsonData == null)
+            {
+                throw new ArgumentNullException(nameof(jsonData));
+            }
+
             var data = new Dictionary<string, object>();
             var relationships = new List<JProperty>();
 
@@ -42,6 +52,11 @@ namespace json_splitter
 
         private IEnumerable<RelationalObject> ReadRelationships(List<JProperty> relationships, IRelationalObject parent)
         {
+            if (relationships == null)
+            {
+                throw new ArgumentNullException(nameof(relationships));
+            }
+
             foreach (var relationship in relationships)
             {
                 var relationshipData = relationship.Value;

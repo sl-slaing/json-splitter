@@ -18,6 +18,26 @@ namespace json_splitter
             IConfigurationRepository configRepository,
             IDataProcessor processor)
         {
+            if (serialiser == null)
+            {
+                throw new ArgumentNullException(nameof(serialiser));
+            }
+
+            if (progress == null)
+            {
+                throw new ArgumentNullException(nameof(progress));
+            }
+
+            if (configRepository == null)
+            {
+                throw new ArgumentNullException(nameof(configRepository));
+            }
+
+            if (processor == null)
+            {
+                throw new ArgumentNullException(nameof(processor));
+            }
+
             this.serialiser = serialiser;
             this.configRepository = configRepository;
             this.processor = processor;
@@ -26,6 +46,11 @@ namespace json_splitter
 
         public void Execute(Arguments args)
         {
+            if (args == null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
             var config = configRepository.ReadConfiguration(args.ConfigFile);
 
             string line;
@@ -54,6 +79,11 @@ namespace json_splitter
 
         private static TextReader GetInput(Arguments args)
         {
+            if (args == null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
             if (Console.IsInputRedirected)
             {
                 return Console.In;

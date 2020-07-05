@@ -10,6 +10,11 @@ namespace json_splitter
 
         public FileStream(IOutputStream output)
         {
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+
             this.output = output;
         }
 
@@ -20,6 +25,11 @@ namespace json_splitter
 
         public void SendData(IRelationalObject relationalObject)
         {
+            if (relationalObject == null)
+            {
+                throw new ArgumentNullException(nameof(relationalObject));
+            }
+
             output.Write(relationalObject);
         }
     }

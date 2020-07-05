@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace json_splitter
@@ -11,6 +12,16 @@ namespace json_splitter
 
         public ProcessDataSender(JsonSerializer serialiser, ProcessConfiguration configuration)
         {
+            if (serialiser == null)
+            {
+                throw new ArgumentNullException(nameof(serialiser));
+            }
+
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
             this.serialiser = serialiser;
             this.configuration = configuration;
         }
@@ -25,6 +36,11 @@ namespace json_splitter
 
         public void SendData(IRelationalObject relationalObject)
         {
+            if (relationalObject == null)
+            {
+                throw new ArgumentNullException(nameof(relationalObject));
+            }
+
             if (!streams.ContainsKey(configuration))
             {
                 var outputStreamFactory = new OutputStreamFactory(configuration.Format, configuration.ColumnHeaders, serialiser);

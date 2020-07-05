@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace json_splitter
 {
@@ -8,6 +9,11 @@ namespace json_splitter
 
         public ProgressReporter(TextWriter writer)
         {
+            if (writer == null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             this.writer = writer;
         }
 

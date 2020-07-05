@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace json_splitter
 {
@@ -11,6 +12,11 @@ namespace json_splitter
 
         public IRelationalObject WithForeignKey(IBindingConfiguration config)
         {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
             if (Parent == null || config.ForeignKeyPropertyName == null)
             {
                 return this;

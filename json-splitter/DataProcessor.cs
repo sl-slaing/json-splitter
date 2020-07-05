@@ -36,13 +36,23 @@ namespace json_splitter
                 throw new ArgumentNullException(nameof(jsonData));
             }
 
-            var data = objectReader.ReadJson(jsonData);
-
-            ProcessData(config, data);
+            ProcessData(
+                config,
+                objectReader.ReadJson(jsonData));
         }
 
         private void ProcessData(IDataConfiguration config, IRelationalObject data)
         {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             var sender = senderFactory.GetDataSender(config);
 
             sender.SendData(data);

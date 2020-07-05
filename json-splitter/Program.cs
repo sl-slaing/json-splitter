@@ -13,7 +13,7 @@ namespace json_splitter
                    {
                        var serialiser = new JsonSerializer();
 
-                       using (var senderFactory = new DataSenderFactory(args, serialiser))
+                       using (var senderFactory = new DataSenderFactory(serialiser))
                        {
                            var processor = new Processor(
                                args.Quiet

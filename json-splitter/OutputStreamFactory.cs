@@ -12,6 +12,11 @@ namespace json_splitter
 
         public OutputStreamFactory(RowFormat format, bool csvHeader, JsonSerializer serialiser)
         {
+            if (serialiser == null)
+            {
+                throw new ArgumentNullException(nameof(serialiser));
+            }
+
             this.format = format;
             this.csvHeader = csvHeader;
             this.serialiser= serialiser;
@@ -19,6 +24,11 @@ namespace json_splitter
 
         public IOutputStream Create(TextWriter writer)
         {
+            if (writer == null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             switch (format)
             {
                 case RowFormat.Csv:

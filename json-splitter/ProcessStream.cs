@@ -13,6 +13,16 @@ namespace json_splitter
 
         public ProcessStream(ProcessConfiguration config, IOutputStreamFactory outputFactory)
         {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            if (outputFactory == null)
+            {
+                throw new ArgumentNullException(nameof(outputFactory));
+            }
+
             if (string.IsNullOrEmpty(config.FileName))
             {
                 throw new ArgumentNullException("fileName", "Process filename must be supplied");
@@ -34,8 +44,13 @@ namespace json_splitter
             process = null;
         }
 
-        internal void SendData(IRelationalObject relationalObject)
+        public void SendData(IRelationalObject relationalObject)
         {
+            if (relationalObject == null)
+            {
+                throw new ArgumentNullException(nameof(relationalObject));
+            }
+
             if (process == null)
             {
                 StartProcess();

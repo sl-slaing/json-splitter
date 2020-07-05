@@ -6,18 +6,26 @@ namespace json_splitter
 {
     public class DataSenderFactory : IDataSenderFactory
     {
-        private readonly Arguments args;
         private readonly JsonSerializer serialiser;
         private readonly Dictionary<IDataConfiguration, IDataSender> senders = new Dictionary<IDataConfiguration, IDataSender>();
 
-        public DataSenderFactory(Arguments args, JsonSerializer serialiser)
+        public DataSenderFactory(JsonSerializer serialiser)
         {
-            this.args = args;
+            if (serialiser == null)
+            {
+                throw new ArgumentNullException(nameof(serialiser));
+            }
+
             this.serialiser = serialiser;
         }
 
         public IDataSender GetDataSender(IDataConfiguration configuration)
         {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
             if (!senders.ContainsKey(configuration))
             {
                 senders.Add(configuration, CreateDataSender(configuration));
@@ -36,6 +44,11 @@ namespace json_splitter
 
         private IDataSender CreateDataSender(IDataConfiguration configuration)
         {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
             if (configuration.File != null)
             {
                 return new FileDataSender(serialiser, configuration.File);

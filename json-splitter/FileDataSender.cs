@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -12,6 +13,16 @@ namespace json_splitter
 
         public FileDataSender(JsonSerializer serialiser, FileConfiguration configuration)
         {
+            if (serialiser == null)
+            {
+                throw new ArgumentNullException(nameof(serialiser));
+            }
+
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
             this.serialiser = serialiser;
             this.configuration = configuration;
         }
@@ -26,6 +37,11 @@ namespace json_splitter
 
         public void SendData(IRelationalObject relationalObject)
         {
+            if (relationalObject == null)
+            {
+                throw new ArgumentNullException(nameof(relationalObject));
+            }
+
             if (!streams.ContainsKey(configuration))
             {
                 var fileName = configuration.FileName;

@@ -42,7 +42,7 @@ namespace json_splitter
 
         private string FormatAsCsv<T>(T[] csvColumnOrder)
         {
-            return string.Join(",", csvColumnOrder.ToArray());
+            return string.Join(",", csvColumnOrder);
         }
 
         private string[] CreateCsvColumnOrder(IRelationalObject relationalObject)
