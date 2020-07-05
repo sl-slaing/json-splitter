@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using CsvHelper;
+using CsvHelper.Configuration;
 
 namespace json_splitter
 {
     public class CsvStream : IOutputStream
     {
-        private readonly TextWriter writer;
+        private readonly IDisposable underlyingWriter;
+        private readonly CsvWriter writer;
         private readonly bool includeHeaders;
         private string[] csvColumnOrder;
 
@@ -17,7 +22,10 @@ namespace json_splitter
                 throw new ArgumentNullException(nameof(writer));
             }
 
-            this.writer = writer;
+            this.underlyingWriter = writer;
+            this.writer = new CsvWriter(
+                writer,
+                new CsvConfiguration(CultureInfo.CurrentCulture));
             this.includeHeaders = includeHeaders;
         }
 
@@ -33,16 +41,29 @@ namespace json_splitter
                 csvColumnOrder = CreateCsvColumnOrder(data);
                 if (includeHeaders)
                 {
-                    writer.WriteLine(FormatAsCsv(csvColumnOrder));
+                    WriteHeader(csvColumnOrder);
                 }
             }
 
-            writer.WriteLine(FormatDataAsCsv(data, csvColumnOrder));
+            WriteRecord(data.Data);
         }
 
-        private string FormatAsCsv<T>(T[] csvColumnOrder)
+        private void WriteHeader(string[] csvColumnOrder)
         {
-            return string.Join(",", csvColumnOrder);
+            foreach (var field in csvColumnOrder)
+            {
+                writer.WriteField(field);
+            }
+            writer.NextRecord();
+        }
+
+        private void WriteRecord(IReadOnlyDictionary<string, object> data)
+        {
+            foreach (var field in csvColumnOrder)
+            {
+                writer.WriteField(data[field] ?? "");
+            }
+            writer.NextRecord();
         }
 
         private string[] CreateCsvColumnOrder(IRelationalObject relationalObject)
@@ -50,15 +71,10 @@ namespace json_splitter
             return relationalObject.Data.Keys.ToArray();
         }
 
-        private string FormatDataAsCsv(IRelationalObject relationalObject, string[] columnOrder)
-        {
-            return FormatAsCsv(columnOrder.Select(column => relationalObject.Data[column]).ToArray());
-        }
-
         public void Dispose()
         {
             writer.Flush();
-            writer.Close();
+            underlyingWriter.Dispose();
         }
     }
 }
