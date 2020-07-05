@@ -7,7 +7,7 @@ namespace json_splitter
 {
     public class Processor
     {
-        private readonly ConfigurationRepository configRepository;
+        private readonly IConfigurationRepository configRepository;
         private readonly IDataProcessor processor;
         private readonly IProgressReporter progress;
         private readonly JsonSerializer serialiser;
@@ -15,7 +15,7 @@ namespace json_splitter
         public Processor(
             IProgressReporter progress,
             JsonSerializer serialiser,
-            ConfigurationRepository configRepository,
+            IConfigurationRepository configRepository,
             IDataProcessor processor)
         {
             this.serialiser = serialiser;

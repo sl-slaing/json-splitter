@@ -4,9 +4,9 @@ using System;
 
 namespace json_splitter
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] commandLineArgs)
+        public static void Main(string[] commandLineArgs)
         {
             Parser.Default.ParseArguments<Arguments>(commandLineArgs)
                    .WithParsed(args =>

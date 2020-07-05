@@ -1,7 +1,9 @@
 ﻿using CommandLine;
+using System.Diagnostics.CodeAnalysis;
 
 namespace json_splitter
 {
+    [ExcludeFromCodeCoverage]
     public class Arguments
     {
         [Option('c', "config", Required = true, HelpText = "The configuration file to use.")]

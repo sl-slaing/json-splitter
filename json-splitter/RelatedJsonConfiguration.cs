@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace json_splitter
 {
+    [ExcludeFromCodeCoverage]
     public class RelatedJsonConfiguration : IDataConfiguration
     {
         public string ForeignKeyColumnName { get; set; }

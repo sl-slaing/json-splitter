@@ -1,5 +1,8 @@
-﻿namespace json_splitter
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace json_splitter
 {
+    [ExcludeFromCodeCoverage]
     public class SqlConfiguration : IBindingConfiguration
     {
         public string ForeignKeyColumnName { get; set; }

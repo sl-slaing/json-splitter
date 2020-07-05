@@ -1,5 +1,8 @@
-﻿namespace json_splitter
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace json_splitter
 {
+    [ExcludeFromCodeCoverage]
     public class FileConfiguration : IBindingConfiguration
     {
         public string FileName { get; set; }

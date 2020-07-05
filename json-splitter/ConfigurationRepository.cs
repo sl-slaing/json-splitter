@@ -4,7 +4,7 @@ using System.IO;
 
 namespace json_splitter
 {
-    public class ConfigurationRepository
+    public class ConfigurationRepository : IConfigurationRepository
     {
         private readonly JsonSerializer serialiser;
 
