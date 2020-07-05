@@ -11,7 +11,6 @@ namespace json_splitter
         public string ForeignKeyPropertyName { get; set; }
         public Dictionary<string, RelatedJsonConfiguration> Relationships { get; set; }
 
-        public SqlConfiguration Sql { get; set; }
         public ProcessConfiguration Process { get; set; }
         public FileConfiguration File { get; set; }
 

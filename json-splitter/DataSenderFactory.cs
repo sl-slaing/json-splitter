@@ -46,12 +46,7 @@ namespace json_splitter
                 return new ProcessDataSender(serialiser, configuration.Process);
             }
 
-            if (configuration.Sql != null)
-            {
-                return new SqlDataSender(configuration.Sql, configuration);
-            }
-
-            throw new InvalidOperationException("No output configured, provide either 'process' or 'sql' in the config file or use the `--out-to-files` switch to output data to individual files");
+            throw new InvalidOperationException("No output configured, provide either 'file' or 'process' in the config file or use the `--out-to-files` switch to output data to individual files");
         }
     }
 }
