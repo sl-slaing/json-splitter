@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 namespace json_splitter
@@ -66,6 +67,21 @@ namespace json_splitter
 
         private void StartProcess()
         {
+            if (string.IsNullOrEmpty(config.FileName))
+            {
+                throw new ArgumentException("Process executable must be supplied", "FileName");
+            }
+
+            if (!File.Exists(config.FileName))
+            {
+                throw new FileNotFoundException("Process executable does not exist", config.FileName);
+            }
+
+            if (!string.IsNullOrEmpty(config.WorkingDirectory) && !Directory.Exists(config.WorkingDirectory))
+            {
+                throw new DirectoryNotFoundException($"Working directory for process does not exist: {config.WorkingDirectory}");
+            }
+
             var process = new Process
             {
                 StartInfo =
@@ -85,7 +101,7 @@ namespace json_splitter
                 throw new InvalidOperationException($"Could not start process: {config.FileName} {config.Arguments}");
             }
 
-            output = outputFactory.Create(process.StandardInput);
+            this.output = outputFactory.Create(process.StandardInput);
             this.process = process;
         }
     }

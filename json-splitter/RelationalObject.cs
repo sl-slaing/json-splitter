@@ -22,6 +22,16 @@ namespace json_splitter
                 return this;
             }
 
+            if (Parent.Data == null)
+            {
+                throw new InvalidOperationException("Current object has no data");
+            }
+
+            if (!Parent.Data.ContainsKey(config.ForeignKeyPropertyName))
+            {
+                throw new ArgumentException($"There is no property in the parent data with the property name '{config.ForeignKeyPropertyName}'", "ForeignKeyPropertyName");
+            }
+
             var augmentedData = new Dictionary<string, object>(Data);
             augmentedData.Add(config.ForeignKeyColumnName, Parent.Data[config.ForeignKeyPropertyName]);
             return new RelationalObject

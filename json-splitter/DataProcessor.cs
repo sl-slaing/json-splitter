@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 
 namespace json_splitter
 {
@@ -53,12 +54,22 @@ namespace json_splitter
                 throw new ArgumentNullException(nameof(data));
             }
 
+            if (data.Children == null || !data.Children.Any())
+            {
+                return;
+            }
+
             var sender = senderFactory.GetDataSender(config);
 
             sender.SendData(data);
-    
+
             foreach (var relationship in data.Children)
             {
+                if (!config.Relationships.ContainsKey(relationship.RelationshipName))
+                {
+                    throw new InvalidOperationException($"Cannot find relationship with name {relationship.RelationshipName}");
+                }
+
                 var relationshipConfig = config.Relationships[relationship.RelationshipName];
                 ProcessData(relationshipConfig, relationship);
             }
