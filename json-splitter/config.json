@@ -1,8 +1,5 @@
 ﻿{
   "tableName": "customer",
-  "sql": {
-    "connectionString": "server=localhost,database=customers"
-  },
   "file": {
     "filename": "customer.json",
     "format": "json",
@@ -22,11 +19,6 @@
         "filename": "order.csv",
         "format": "csv",
         "columnHeaders": true,
-        "foreignKeyPropertyName": "id",
-        "foreignKeyColumnName": "customer_id"
-      },
-      "sql": {
-        "connectionString": "some string",
         "foreignKeyPropertyName": "id",
         "foreignKeyColumnName": "customer_id"
       }

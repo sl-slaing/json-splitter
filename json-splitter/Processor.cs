@@ -9,6 +9,7 @@ namespace json_splitter
     {
         private readonly IConfigurationRepository configRepository;
         private readonly IDataProcessor processor;
+        private readonly IInputFactory inputFactory;
         private readonly IProgressReporter progress;
         private readonly JsonSerializer serialiser;
 
@@ -16,7 +17,8 @@ namespace json_splitter
             IProgressReporter progress,
             JsonSerializer serialiser,
             IConfigurationRepository configRepository,
-            IDataProcessor processor)
+            IDataProcessor processor,
+            IInputFactory inputFactory)
         {
             if (serialiser == null)
             {
@@ -41,6 +43,7 @@ namespace json_splitter
             this.serialiser = serialiser;
             this.configRepository = configRepository;
             this.processor = processor;
+            this.inputFactory = inputFactory;
             this.progress = progress;
         }
 
@@ -54,7 +57,7 @@ namespace json_splitter
             var config = configRepository.ReadConfiguration(args.ConfigFile);
 
             string line;
-            var inputData = GetInput(args);
+            var inputData = inputFactory.GetInput(args);
             var lineNumber = 0;
 
             while ((line = inputData.ReadLine()) != null)
@@ -75,26 +78,6 @@ namespace json_splitter
         private static bool IsNdJson(string trimmedLine)
         {
             return trimmedLine.StartsWith("{") && trimmedLine.EndsWith("}");
-        }
-
-        private static TextReader GetInput(Arguments args)
-        {
-            if (args == null)
-            {
-                throw new ArgumentNullException(nameof(args));
-            }
-
-            if (Console.IsInputRedirected)
-            {
-                return Console.In;
-            }
-
-            if (args.File != null)
-            {
-                return new StreamReader(args.File);
-            }
-
-            throw new InvalidOperationException("No input provided. Use --input <file> or pipe input into this process\nInput data must be in NDJSON format.");
         }
     }
 }

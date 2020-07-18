@@ -13,7 +13,7 @@ namespace json_splitter
                    {
                        var serialiser = new JsonSerializer();
 
-                       using (var senderFactory = new DataSenderFactory(serialiser))
+                       using (var senderFactory = new DataSenderFactory(serialiser, new StreamFactory()))
                        {
                            var processor = new Processor(
                                args.Quiet
@@ -21,7 +21,8 @@ namespace json_splitter
                                     : new ProgressReporter(Console.Out),
                                serialiser,
                                new ConfigurationRepository(serialiser),
-                               new DataProcessor(senderFactory, new RelationalObjectReader()));
+                               new DataProcessor(senderFactory, new RelationalObjectReader()),
+                               new InputFactory());
                            try
                            {
                                processor.Execute(args);

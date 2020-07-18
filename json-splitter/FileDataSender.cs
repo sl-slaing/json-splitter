@@ -10,8 +10,9 @@ namespace json_splitter
         private readonly Dictionary<FileConfiguration, FileStream> streams = new Dictionary<FileConfiguration, FileStream>();
         private readonly JsonSerializer serialiser;
         private readonly FileConfiguration configuration;
+        private readonly IStreamFactory streamFactory;
 
-        public FileDataSender(JsonSerializer serialiser, FileConfiguration configuration)
+        public FileDataSender(JsonSerializer serialiser, FileConfiguration configuration, IStreamFactory streamFactory)
         {
             if (serialiser == null)
             {
@@ -25,6 +26,7 @@ namespace json_splitter
 
             this.serialiser = serialiser;
             this.configuration = configuration;
+            this.streamFactory = streamFactory;
         }
 
         public void Dispose()
@@ -46,7 +48,7 @@ namespace json_splitter
             {
                 var fileName = configuration.FileName;
                 var factory = new OutputStreamFactory(configuration.Format, configuration.ColumnHeaders, serialiser);
-                var writer = new StreamWriter(fileName, false);
+                var writer = streamFactory.OpenWrite(fileName);
                 streams.Add(configuration, new FileStream(factory.Create(writer)));
             }
 

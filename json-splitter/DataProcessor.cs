@@ -54,14 +54,14 @@ namespace json_splitter
                 throw new ArgumentNullException(nameof(data));
             }
 
+            var sender = senderFactory.GetDataSender(config);
+
+            sender.SendData(data);
+
             if (data.Children == null || !data.Children.Any())
             {
                 return;
             }
-
-            var sender = senderFactory.GetDataSender(config);
-
-            sender.SendData(data);
 
             foreach (var relationship in data.Children)
             {

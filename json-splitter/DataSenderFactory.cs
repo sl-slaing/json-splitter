@@ -7,9 +7,10 @@ namespace json_splitter
     public class DataSenderFactory : IDataSenderFactory
     {
         private readonly JsonSerializer serialiser;
+        private readonly IStreamFactory streamFactory;
         private readonly Dictionary<IDataConfiguration, IDataSender> senders = new Dictionary<IDataConfiguration, IDataSender>();
 
-        public DataSenderFactory(JsonSerializer serialiser)
+        public DataSenderFactory(JsonSerializer serialiser, IStreamFactory streamFactory)
         {
             if (serialiser == null)
             {
@@ -17,6 +18,7 @@ namespace json_splitter
             }
 
             this.serialiser = serialiser;
+            this.streamFactory = streamFactory;
         }
 
         public IDataSender GetDataSender(IDataConfiguration configuration)
@@ -51,7 +53,7 @@ namespace json_splitter
 
             if (configuration.File != null)
             {
-                return new FileDataSender(serialiser, configuration.File);
+                return new FileDataSender(serialiser, configuration.File, streamFactory);
             }
 
             if (configuration.Process != null)
